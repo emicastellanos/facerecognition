@@ -2,10 +2,11 @@
   text-align: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+.center{
+  display: flex;
+  justify-content:center; 
 }
+
 
 .App-header {
   background-color: #282c34;
@@ -18,15 +19,11 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.particles{
+  position: fixed; /*mantiene todo fijo aunque scrolees*/
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
 }
