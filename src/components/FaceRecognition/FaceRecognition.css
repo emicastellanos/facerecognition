@@ -1,0 +1,12 @@
+.bounding-box{
+position: absolute;
+/* position necesita ser definido para que funcionen los styles top,right,bottom and left*/
+box-shadow: inset 0 0 0 2px #149df2;
+/* display: -ms-flexbox; */
+display: flex;
+/* -ms-flex-wrap: wrap; */
+flex-wrap: wrap;
+/* -ms-flex-pack: center; */
+justify-content: center;
+cursor: pointer;
+} 

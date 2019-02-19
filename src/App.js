@@ -2,9 +2,18 @@ import React, { Component } from 'react';
 import Navigation from './components/Navigation/Navigation';
 import Logo from './components/Logo/Logo';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
+import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Rank from './components/Rank/Rank';
 import Particles from 'react-particles-js';
+import Clarifai from 'clarifai'; //esta es la nueva manera de javascript
 import './App.css';
+import SignIn from './components/SignIn/SignIn';
+import Register from './components/Register/Register';
+//const Clarifai = require('clarifai'); clarifi propone la manera comun de js pero aca usamos la mas cheta
+
+const app = new Clarifai.App({
+  apiKey: '5c1802b7ef804d32b4b9dc5d8e14340a'
+ });
 
 const particlesOptions = {
   particles: {
@@ -20,7 +29,7 @@ const particlesOptions = {
         type:"circle",
         stroke:{
           width:3,
-          color:"#7a2525"
+           color:"#7a2525"
         }
       },
       polygon:{
@@ -30,15 +39,106 @@ const particlesOptions = {
   }
 }
 class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      input: '',
+      imgUrl: '',
+      box:{},
+      route: 'signin',
+      isSignedIn: false
+    }
+  }
+
+  calculateFaceLocation = (data) => {
+    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;   
+    const image = document.getElementById('inputImage');
+    const width = Number(image.width); //lo casteamos a number porque es un string en realidad sobre el que necesitamos hacer calculos. que onda si no lo casteamos?
+    const height = Number(image.height);
+    console.log('width' ,width)
+    console.log('right col' ,clarifaiFace.right_col )
+    console.log('columna derecha' ,clarifaiFace.right_col * width)
+    console.log('columna izquierda' ,clarifaiFace.left_col * width)
+    console.log('columna derecha bien' ,width - (clarifaiFace.right_col * width))
+    console.log('columna izquierda bien' , height - (clarifaiFace.bottom_row * height))
+    return {
+      leftCol: clarifaiFace.left_col * width,
+      topRow: clarifaiFace.top_row * height,
+      rightCol: width - (clarifaiFace.right_col * width), 
+      bottomRow : height - (clarifaiFace.bottom_row * height)
+    }
+  }
+
+  onInputChange = (event) => {
+    this.setState({input: event.target.value});
+  }
+
+  displayFaceBox = (box) => {
+    console.log(box);
+    this.setState({box: box}); //incluso aca se podria decir this.setState({box}); y es exactamente lo mismo
+
+  }
+
+  // onSubmit = (event) => {
+  //   app.models
+  //   .initModel({id: Clarifai.COLOR_MODEL, version: "aa7f35c01e0642fda5cf400f543e7c40"})
+  //     .then(generalModel => {
+  //       return generalModel.predict("https://www.familias.com/wp-content/uploads/2015/08/featuredImageId65477-700x467.jpg");
+  //     })
+  //     .then(response => {
+  //       //var concepts = response['outputs'][0]['data']['concepts'];
+  //       console.log(response);
+  //     })
+  // }
+
+  
+
+  onSubmit = (event) => {
+    this.setState( {imgUrl: this.state.input}, () => {
+      console.log('se escribio el input:', this.state.imgUrl);
+    } );
+    //setState() does not immediately mutate this.state but creates a pending state transition.
+     //Accessing this.state after calling this method can potentially return the existing value. 
+     //There is no guarantee of synchronous operation of calls to setState and calls may be batched for performance gains
+    app.models
+    .predict(
+      Clarifai.FACE_DETECT_MODEL,
+      this.state.input)
+    .then( response =>this.displayFaceBox(this.calculateFaceLocation(response)))
+    .catch ( err => console.log(err)) ;
+  }
+
+  onRouteChange = (route) =>{
+    if (route=== 'signout'){
+      this.setState({isSignedIn: false});
+    } else if (route ==='home'){
+      this.setState({isSignedIn: true});
+    }
+    this.setState({route: route});
+  }
+
   render() {
+    const {isSignedIn, box,route, imgUrl} = this.state;
+
     return (
       <div className="App">
-        <Particles className='particles' params={particlesOptions}/> 
-        <Navigation />
-        <Logo />
-        <Rank/>
-        <ImageLinkForm/>
-        {/*<FaceRecognition /> */}
+      <Particles className='particles' params={particlesOptions}/>
+      <Navigation onRouteChange={this.onRouteChange} isSignedIn={isSignedIn}/>
+
+      {/* por que no puedo usar un if()then aca vieja escuela */}
+      {route === 'home'
+        ?<div>
+            <Logo />
+            <Rank/>
+            <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onSubmit}/>
+            <FaceRecognition imgUrl={imgUrl} box={box}/>
+          </div> 
+        : (route === 'signin'
+          ?<SignIn onRouteChange={this.onRouteChange}/>
+          :<Register onRouteChange={this.onRouteChange}/>
+        )
+        
+      }
       </div>
     );
   }
