@@ -45,18 +45,15 @@ class Register extends Component {
         .then(response => response.json())
         .then(user => {
             if (user){ //el metodo register devuelve el ultimo usuario agregado
-                console.log(user); //este seria el usuario creado
+                console.log('register.onSubmitSignIn',user); //este seria el usuario creado
                 //usamos this.props porque estamos comunicandonos con el frontend (app.js) (esto es solo un componente que hace su trabajo y ya)
                 this.props.loadUser(user);
                 this.props.onRouteChange('home');
             }
         })
-        
     }
 
     render (){
-
-        //const {onRouteChange} = this.props;
 
         return (
             <article className="br2 ba bg-near-white dark-gray b--black-10 mv5 w-100 w-50-m w-25-l mw6  center shadow-5 white">

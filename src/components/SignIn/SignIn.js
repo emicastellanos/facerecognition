@@ -36,9 +36,10 @@ class SignIn extends Component {
         })
         .then(response => response.json())
         .then(data => {
-            if (data==='success'){
-                console.log('llego succed');
+            if (data){
+                console.log('llego succed', data);
                 this.props.onRouteChange('home');
+                this.props.loadUser(data);
             }
         })
         

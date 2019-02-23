@@ -60,22 +60,13 @@ class App extends Component {
   }
 
 
-  componentDidMount(){
-    fetch('http://localhost:3000')
-      .then(response => response.json())
-      .then(data => console.log(data));
-  }
+  // componentDidMount(){
+  //   fetch('http://localhost:3000')
+  //     .then(response => response.json())
+  //     .then(data => console.log(data));
+  // }
 
-  loadUser = (dataUser) => {
-    this.setState( { user: {
-          id:dataUser.id,
-          name:dataUser.name,
-          email:dataUser.email,
-          entries:dataUser.entries,
-          joined:dataUser.joined
-    }})
 
-  }
 
   calculateFaceLocation = (data) => {
     const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;   
@@ -135,12 +126,25 @@ class App extends Component {
     .catch ( err => console.log(err)) ;
   }
 
+  loadUser = (dataUser) => {
+    console.log('loadUser:',dataUser);
+    this.setState( { user: {
+          id:dataUser.id,
+          name:dataUser.name,
+          email:dataUser.email,
+          entries:dataUser.entries,
+          joined:dataUser.joined
+    }})
+  }
+
   onRouteChange = (route) =>{
-    if (route=== 'signout'){
+    console.log('llegó', route)
+    if (route === 'signout'){
       this.setState({isSignedIn: false});
     } else if (route ==='home'){
       this.setState({isSignedIn: true});
     }
+
     this.setState({route: route});
   }
 
