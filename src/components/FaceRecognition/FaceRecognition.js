@@ -1,14 +1,17 @@
 import React from 'react';
-import './FaceRecognition.css';
+//import './FaceRecognition.css';
 
-const FaceRecognition = ({imgUrl, box}) => {
+const FaceRecognition = ({imgUrl, boxes}) => {
     return (
         <div className='center ma'>
             <div className='absolute mt2'>
                 <img id='inputImage' alt='' src={imgUrl} width='500px' heigh='auto'/>
-                {console.log(box)}
-                <div className='bounding-box' style={{top: box.topRow, right: box.rightCol, left:box.leftCol, bottom: box.bottomRow }} >
+                {console.log(boxes)}
+                {boxes.map( box => 
+                <div key={box.key} className='bounding-box' style={{top: box.topRow, right: box.rightCol, left:box.leftCol, bottom: box.bottomRow }}>
                 </div>
+                )}
+                
                 {/* a la clase bounding-box le estamos pasando unos margenes respecto de la imagen. Los margenes son lo que nos aleja de los bordes
                  El margen right dice que el elemento va a tener cierto distancia de su margen derecho  (AUNQUE NO SON MARGENES PER SE, es decir margin-top y eso):
                  If position: absolute; or position: fixed; - the top property sets the top edge of an element to a unit above/below the top edge of its nearest positioned ancestor.

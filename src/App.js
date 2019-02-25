@@ -9,6 +9,7 @@ import Clarifai from 'clarifai'; //esta es la nueva manera de javascript
 import './App.css';
 import SignIn from './components/SignIn/SignIn';
 import Register from './components/Register/Register';
+import BorderBox from './components/FaceRecognition/BorderBox';
 //const Clarifai = require('clarifai'); clarifi propone la manera comun de js pero aca usamos la mas cheta
 
 const app = new Clarifai.App({
@@ -39,6 +40,14 @@ const particlesOptions = {
   }
 }
 
+function isEmpty(obj) {
+  for(var key in obj) {
+      if(obj.hasOwnProperty(key))
+          return false;
+  }
+  return true;
+}
+
 class App extends Component {
   constructor() {
     super();
@@ -65,33 +74,41 @@ class App extends Component {
   //     .then(response => response.json())
   //     .then(data => console.log(data));
   // }
-
+  
+  
 
 
   calculateFaceLocation = (data) => {
     let lista = []
-    data.outputs[0].data.regions.map( (region) => {
-      const clarifaiFace = region.region_info.bounding_box;   
-      const image = document.getElementById('inputImage');
-      const width = Number(image.width); //lo casteamos a number porque es un string en realidad sobre el que necesitamos hacer calculos. que onda si no lo casteamos?
-      const height = Number(image.height);
-      console.log('width' ,width)
-      console.log('right col' ,clarifaiFace.right_col )
-      console.log('columna derecha' ,clarifaiFace.right_col * width)
-      console.log('columna izquierda' ,clarifaiFace.left_col * width)
-      console.log('columna derecha bien' ,width - (clarifaiFace.right_col * width))
-      console.log('columna izquierda bien' , height - (clarifaiFace.bottom_row * height))
-      lista.push({
-        leftCol: clarifaiFace.left_col * width,
-        topRow: clarifaiFace.top_row * height,
-        rightCol: width - (clarifaiFace.right_col * width), 
-        bottomRow : height - (clarifaiFace.bottom_row * height)
+    let key=1;
+    console.log('data bebebeeee', data)
+    if(!isEmpty(data.outputs[0].data)){
+      data.outputs[0].data.regions.map( region => {
+        const clarifaiFace = region.region_info.bounding_box;   
+        const image = document.getElementById('inputImage');
+        const width = Number(image.width); //lo casteamos a number porque es un string en realidad sobre el que necesitamos hacer calculos. que onda si no lo casteamos?
+        const height = Number(image.height);
+        console.log('width' ,width)
+        console.log('right col' ,clarifaiFace.right_col )
+        console.log('columna derecha' ,clarifaiFace.right_col * width)
+        console.log('columna izquierda' ,clarifaiFace.left_col * width)
+        console.log('columna derecha bien' ,width - (clarifaiFace.right_col * width))
+        console.log('columna izquierda bien' , height - (clarifaiFace.bottom_row * height))
+        lista.push({
+          key:key++,
+          leftCol: clarifaiFace.left_col * width,
+          topRow: clarifaiFace.top_row * height,
+          rightCol: width - (clarifaiFace.right_col * width), 
+          bottomRow : height - (clarifaiFace.bottom_row * height)
+        })
+  
       })
-
-    })
+      console.log('a ver ahora', lista);
+      return lista
+    } else return []
     
-    console.log('a ver ahora', lista);
-    return lista
+    
+    
   }
 
   onInputChange = (event) => {
@@ -187,8 +204,10 @@ class App extends Component {
             <Logo />
             <Rank name={this.state.user.name} entries={this.state.user.entries}/>
             <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onPictureSubmit}/>
-            <FaceRecognition imgUrl={imgUrl} box={boxes.length>0?boxes[0]:{}}/>
-            {/* box={box} */}
+            <FaceRecognition imgUrl={imgUrl} boxes={boxes}/> 
+            {/* {
+              boxes.map( box => <BorderBox key={box.key} box={box}/>)
+            } */}
           </div> 
         : (route === 'signin'
           ?<SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
