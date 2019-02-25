@@ -97,7 +97,7 @@ class App extends Component {
 
   }
 
-  // onSubmit = (event) => {
+  // otro Forma: onPictureSubmit = (event) => {
   //   app.models
   //   .initModel({id: Clarifai.COLOR_MODEL, version: "aa7f35c01e0642fda5cf400f543e7c40"})
   //     .then(generalModel => {
@@ -111,7 +111,7 @@ class App extends Component {
 
   
 
-  onSubmit = (event) => {
+  onPictureSubmit = (event) => {
     this.setState( {imgUrl: this.state.input}, () => {
       console.log('se escribio el input:', this.state.imgUrl);
     } );
@@ -122,7 +122,26 @@ class App extends Component {
     .predict(
       Clarifai.FACE_DETECT_MODEL,
       this.state.input)
-    .then( response =>this.displayFaceBox(this.calculateFaceLocation(response)))
+    .then( response => {
+      fetch('http://localhost:3000/image', {
+            method: 'put', 
+            headers: {'Content-type': 'application/json'},
+            body: JSON.stringify({
+                id:this.state.user.id
+            })
+        })
+      .then(response => response.json())
+      .then(entries => this.setState(Object.assign(this.state.user,{entries:entries}))
+      // si hago esto, me actualiza el user entero cambiando solo los entries y no es la idea. Solo necesitamos actualizar el campo entries 
+      //para eso usamos el Object.assign
+      //.then(entries => this.setState(
+      //   { user:{
+      //     entries: entries
+      //   }})
+      )
+      console.log('IMAGE::::', this.state.user)
+      this.displayFaceBox(this.calculateFaceLocation(response))
+    })
     .catch ( err => console.log(err)) ;
   }
 
@@ -138,15 +157,14 @@ class App extends Component {
   }
 
   onRouteChange = (route) =>{
-    console.log('llegó', route)
     if (route === 'signout'){
       this.setState({isSignedIn: false});
     } else if (route ==='home'){
       this.setState({isSignedIn: true});
     }
-
     this.setState({route: route});
   }
+
 
   render() {
     const {isSignedIn, box,route, imgUrl} = this.state;
@@ -161,7 +179,7 @@ class App extends Component {
         ?<div>
             <Logo />
             <Rank name={this.state.user.name} entries={this.state.user.entries}/>
-            <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onSubmit}/>
+            <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onPictureSubmit}/>
             <FaceRecognition imgUrl={imgUrl} box={box}/>
           </div> 
         : (route === 'signin'
