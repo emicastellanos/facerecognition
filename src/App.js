@@ -45,7 +45,7 @@ class App extends Component {
     this.state = {
       input: '',
       imgUrl: '',
-      box:{},
+      boxes:[],
       route: 'signin',
       isSignedIn: false,
       
@@ -98,9 +98,9 @@ class App extends Component {
     this.setState({input: event.target.value});
   }
 
-  displayFaceBox = (box) => {
-    console.log(box);
-    this.setState({box: box[0]}); //incluso aca se podria decir this.setState({box}); y es exactamente lo mismo
+  displayFaceBox = (boxes) => {
+    console.log(boxes);
+    this.setState({boxes: boxes}); //incluso aca se podria decir this.setState({box}); y es exactamente lo mismo
 
   }
 
@@ -174,20 +174,20 @@ class App extends Component {
 
 
   render() {
-    const {isSignedIn, box,route, imgUrl} = this.state;
+    const {isSignedIn, boxes,route, imgUrl} = this.state;
 
     return (
       <div className="App">
       <Particles className='particles' params={particlesOptions}/>
       <Navigation onRouteChange={this.onRouteChange} isSignedIn={isSignedIn}/>
-
+      {console.log('queres ver los boxes bb?? ', boxes)}
       {/* por que no puedo usar un if()then aca vieja escuela */}
       {route === 'home'
         ?<div>
             <Logo />
             <Rank name={this.state.user.name} entries={this.state.user.entries}/>
             <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onPictureSubmit}/>
-            <FaceRecognition imgUrl={imgUrl} box={box}/>
+            <FaceRecognition imgUrl={imgUrl} box={boxes.length>0?boxes[0]:{}}/>
             {/* box={box} */}
           </div> 
         : (route === 'signin'

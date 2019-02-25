@@ -6,6 +6,7 @@ const FaceRecognition = ({imgUrl, box}) => {
         <div className='center ma'>
             <div className='absolute mt2'>
                 <img id='inputImage' alt='' src={imgUrl} width='500px' heigh='auto'/>
+                {console.log(box)}
                 <div className='bounding-box' style={{top: box.topRow, right: box.rightCol, left:box.leftCol, bottom: box.bottomRow }} >
                 </div>
                 {/* a la clase bounding-box le estamos pasando unos margenes respecto de la imagen. Los margenes son lo que nos aleja de los bordes
