@@ -69,22 +69,29 @@ class App extends Component {
 
 
   calculateFaceLocation = (data) => {
-    const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;   
-    const image = document.getElementById('inputImage');
-    const width = Number(image.width); //lo casteamos a number porque es un string en realidad sobre el que necesitamos hacer calculos. que onda si no lo casteamos?
-    const height = Number(image.height);
-    console.log('width' ,width)
-    console.log('right col' ,clarifaiFace.right_col )
-    console.log('columna derecha' ,clarifaiFace.right_col * width)
-    console.log('columna izquierda' ,clarifaiFace.left_col * width)
-    console.log('columna derecha bien' ,width - (clarifaiFace.right_col * width))
-    console.log('columna izquierda bien' , height - (clarifaiFace.bottom_row * height))
-    return {
-      leftCol: clarifaiFace.left_col * width,
-      topRow: clarifaiFace.top_row * height,
-      rightCol: width - (clarifaiFace.right_col * width), 
-      bottomRow : height - (clarifaiFace.bottom_row * height)
-    }
+    let lista = []
+    data.outputs[0].data.regions.map( (region) => {
+      const clarifaiFace = region.region_info.bounding_box;   
+      const image = document.getElementById('inputImage');
+      const width = Number(image.width); //lo casteamos a number porque es un string en realidad sobre el que necesitamos hacer calculos. que onda si no lo casteamos?
+      const height = Number(image.height);
+      console.log('width' ,width)
+      console.log('right col' ,clarifaiFace.right_col )
+      console.log('columna derecha' ,clarifaiFace.right_col * width)
+      console.log('columna izquierda' ,clarifaiFace.left_col * width)
+      console.log('columna derecha bien' ,width - (clarifaiFace.right_col * width))
+      console.log('columna izquierda bien' , height - (clarifaiFace.bottom_row * height))
+      lista.push({
+        leftCol: clarifaiFace.left_col * width,
+        topRow: clarifaiFace.top_row * height,
+        rightCol: width - (clarifaiFace.right_col * width), 
+        bottomRow : height - (clarifaiFace.bottom_row * height)
+      })
+
+    })
+    
+    console.log('a ver ahora', lista);
+    return lista
   }
 
   onInputChange = (event) => {
@@ -93,7 +100,7 @@ class App extends Component {
 
   displayFaceBox = (box) => {
     console.log(box);
-    this.setState({box: box}); //incluso aca se podria decir this.setState({box}); y es exactamente lo mismo
+    this.setState({box: box[0]}); //incluso aca se podria decir this.setState({box}); y es exactamente lo mismo
 
   }
 
@@ -181,6 +188,7 @@ class App extends Component {
             <Rank name={this.state.user.name} entries={this.state.user.entries}/>
             <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onPictureSubmit}/>
             <FaceRecognition imgUrl={imgUrl} box={box}/>
+            {/* box={box} */}
           </div> 
         : (route === 'signin'
           ?<SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
