@@ -7,6 +7,8 @@ import React, {Component} from 'react';
 //  - tambien le borro la gilada que no vamos a usar: Forgot your password?, Remeber me ...
 
 //
+
+
 class SignIn extends Component {
 
     constructor(){
@@ -25,6 +27,7 @@ class SignIn extends Component {
         this.setState({signInPassword: event.target.value});
     }
 
+    
     onSubmitSignIn = () =>{
         fetch('http://localhost:3000/signin', {
             method: 'post', 
@@ -36,12 +39,17 @@ class SignIn extends Component {
         })
         .then(response => response.json())
         .then(data => {
-            if (data){
+            console.log('daa',data)
+            if (data.id){
                 console.log('llego succed', data);
                 this.props.onRouteChange('home');
                 this.props.loadUser(data);
+            }else{
+                this.props.onRouteChange('register');
             }
         })
+        .catch(err => console.log('error',err))
+        //this.props.onRouteChange('register'))
         
     }
 

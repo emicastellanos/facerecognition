@@ -9,7 +9,6 @@ import Clarifai from 'clarifai'; //esta es la nueva manera de javascript
 import './App.css';
 import SignIn from './components/SignIn/SignIn';
 import Register from './components/Register/Register';
-import BorderBox from './components/FaceRecognition/BorderBox';
 //const Clarifai = require('clarifai'); clarifi propone la manera comun de js pero aca usamos la mas cheta
 
 const app = new Clarifai.App({
@@ -88,12 +87,12 @@ class App extends Component {
         const image = document.getElementById('inputImage');
         const width = Number(image.width); //lo casteamos a number porque es un string en realidad sobre el que necesitamos hacer calculos. que onda si no lo casteamos?
         const height = Number(image.height);
-        console.log('width' ,width)
+        /* console.log('width' ,width)
         console.log('right col' ,clarifaiFace.right_col )
         console.log('columna derecha' ,clarifaiFace.right_col * width)
         console.log('columna izquierda' ,clarifaiFace.left_col * width)
         console.log('columna derecha bien' ,width - (clarifaiFace.right_col * width))
-        console.log('columna izquierda bien' , height - (clarifaiFace.bottom_row * height))
+        console.log('columna izquierda bien' , height - (clarifaiFace.bottom_row * height)) */
         lista.push({
           key:key++,
           leftCol: clarifaiFace.left_col * width,
@@ -205,9 +204,6 @@ class App extends Component {
             <Rank name={this.state.user.name} entries={this.state.user.entries}/>
             <ImageLinkForm onInputChange={this.onInputChange} onButtonSubmit={this.onPictureSubmit}/>
             <FaceRecognition imgUrl={imgUrl} boxes={boxes}/> 
-            {/* {
-              boxes.map( box => <BorderBox key={box.key} box={box}/>)
-            } */}
           </div> 
         : (route === 'signin'
           ?<SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
