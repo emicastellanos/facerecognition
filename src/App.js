@@ -47,24 +47,27 @@ function isEmpty(obj) {
   return true;
 }
 
+const initialState = {
+  input: '',
+  imgUrl: '',
+  boxes:[],
+  route: 'signin',
+  isSignedIn: false,
+  
+  user: {
+    id:'',
+    name:'',
+    email:'',
+    entries:'',
+    joined:''
+  }
+
+}
+
 class App extends Component {
   constructor() {
     super();
-    this.state = {
-      input: '',
-      imgUrl: '',
-      boxes:[],
-      route: 'signin',
-      isSignedIn: false,
-      
-      user: {
-        id:'',
-        name:'',
-        email:'',
-        entries:'',
-        joined:''
-      }
-    }
+    this.state = initialState;
   }
 
 
@@ -181,7 +184,7 @@ class App extends Component {
 
   onRouteChange = (route) =>{
     if (route === 'signout'){
-      this.setState({isSignedIn: false});
+      this.setState(initialState);
     } else if (route ==='home'){
       this.setState({isSignedIn: true});
     }
@@ -209,7 +212,6 @@ class App extends Component {
           ?<SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
           :<Register loadUser={this.loadUser} onRouteChange={this.onRouteChange}/>
         )
-        
       }
       </div>
     );
