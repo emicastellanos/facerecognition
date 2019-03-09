@@ -47,8 +47,11 @@ class Register extends Component {
             if (user){ //el metodo register devuelve el ultimo usuario agregado
                 console.log('register.onSubmitSignIn',user); //este seria el usuario creado
                 //usamos this.props porque estamos comunicandonos con el frontend (app.js) (esto es solo un componente que hace su trabajo y ya)
-                this.props.loadUser(user);
-                this.props.onRouteChange('home');
+                if(user.id){//validacion para saber que la respuesta obtenida se trata de un usuario valido (tiene id)
+                    this.props.loadUser(user);
+                    this.props.onRouteChange('home');
+                }
+                
             }
         })
     }

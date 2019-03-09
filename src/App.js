@@ -5,15 +5,10 @@ import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Rank from './components/Rank/Rank';
 import Particles from 'react-particles-js';
-import Clarifai from 'clarifai'; //esta es la nueva manera de javascript
 import './App.css';
 import SignIn from './components/SignIn/SignIn';
 import Register from './components/Register/Register';
-//const Clarifai = require('clarifai'); clarifi propone la manera comun de js pero aca usamos la mas cheta
 
-const app = new Clarifai.App({
-  apiKey: '5c1802b7ef804d32b4b9dc5d8e14340a'
- });
 
 const particlesOptions = {
   particles: {
@@ -69,15 +64,6 @@ class App extends Component {
     super();
     this.state = initialState;
   }
-
-
-  // componentDidMount(){
-  //   fetch('http://localhost:3000')
-  //     .then(response => response.json())
-  //     .then(data => console.log(data));
-  // }
-  
-  
 
 
   calculateFaceLocation = (data) => {
@@ -141,31 +127,39 @@ class App extends Component {
     this.setState( {imgUrl: this.state.input}, () => {
       console.log('se escribio el input:', this.state.imgUrl);
     } );
+
     //setState() does not immediately mutate this.state but creates a pending state transition.
      //Accessing this.state after calling this method can potentially return the existing value. 
      //There is no guarantee of synchronous operation of calls to setState and calls may be batched for performance gains
-    app.models
-    .predict(
-      Clarifai.FACE_DETECT_MODEL,
-      this.state.input)
-    .then( response => {
-      fetch('http://localhost:3000/image', {
-            method: 'put', 
-            headers: {'Content-type': 'application/json'},
-            body: JSON.stringify({
-                id:this.state.user.id
-            })
+    fetch('http://localhost:3000/imageurl', {
+      method: 'post', 
+      headers: {'Content-type': 'application/json'},
+      body: JSON.stringify({
+          input:this.state.input
+      })
+    })
+    .then(response => response.json())
+    .then(response => {
+      if(response) { //este if no esta del todo bien porque si viniera un error entraria igual ? no, se va al catch
+        fetch('http://localhost:3000/image', {
+          method: 'put', 
+          headers: {'Content-type': 'application/json'},
+          body: JSON.stringify({
+            id:this.state.user.id
+          })
         })
-      .then(response => response.json())
-      .then(entries => this.setState(Object.assign(this.state.user,{entries:entries})))
-      // si hago esto, me actualiza el user entero cambiando solo los entries y no es la idea. Solo necesitamos actualizar el campo entries 
-      //para eso usamos el Object.assign
-      //.then(entries => this.setState(
-      //   { user:{
-      //     entries: entries
-      //   }})
-      .then(this.displayFaceBox(this.calculateFaceLocation(response)))
-      .catch(err => console.log('/image',err))
+        .then(response => response.json())
+        .then(entries => this.setState(Object.assign(this.state.user,{entries:entries})))
+        // si hago esto, me actualiza el user entero cambiando solo los entries y no es la idea. Solo necesitamos actualizar el campo entries 
+        //para eso usamos el Object.assign
+        //.then(entries => this.setState(
+        //   { user:{
+        //     entries: entries
+        //   }})
+        .then(this.displayFaceBox(this.calculateFaceLocation(response)))//lo puse dentro del chain porque si la respuesta tardase mucho en llegar
+        
+        .catch(err => console.log('/image',err))
+      }
       
     })
     .catch ( err => console.log(err)) ;
