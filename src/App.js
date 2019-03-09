@@ -157,16 +157,16 @@ class App extends Component {
             })
         })
       .then(response => response.json())
-      .then(entries => this.setState(Object.assign(this.state.user,{entries:entries}))
+      .then(entries => this.setState(Object.assign(this.state.user,{entries:entries})))
       // si hago esto, me actualiza el user entero cambiando solo los entries y no es la idea. Solo necesitamos actualizar el campo entries 
       //para eso usamos el Object.assign
       //.then(entries => this.setState(
       //   { user:{
       //     entries: entries
       //   }})
-      )
-      console.log('IMAGE::::', this.state.user)
-      this.displayFaceBox(this.calculateFaceLocation(response))
+      .then(this.displayFaceBox(this.calculateFaceLocation(response)))
+      .catch(err => console.log('/image',err))
+      
     })
     .catch ( err => console.log(err)) ;
   }
